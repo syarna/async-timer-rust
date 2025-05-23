@@ -1,4 +1,5 @@
 # Tutorial 10
+## Syarna Savitri (2206083565)
 
 ## Penjelasan Singkat Tutorial 1.3
 
@@ -27,6 +28,7 @@ Kode yang digunakan merupakan sebuah executor sederhana yang menjalankan future 
 
 
 Output konsol:
+
 <img width="762" alt="Screenshot 2025-05-23 at 16 24 28" src="https://github.com/user-attachments/assets/09b86233-b0d8-4609-859c-c9dff44e801b" />
 
 
@@ -43,6 +45,7 @@ Output konsol:
 
 
 Output konsol:
+
 <img width="766" alt="Screenshot 2025-05-23 at 16 29 46" src="https://github.com/user-attachments/assets/0440f1aa-1f49-44b1-8fec-c117784c80cf" />
 
 
