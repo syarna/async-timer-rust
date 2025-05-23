@@ -4,6 +4,7 @@ use std::sync::{Arc, Mutex};
 use std::task::{Context, Poll, Waker};
 use std::thread;
 use std::time::Duration;
+
 use futures::task::{waker_ref, ArcWake};
 use futures::stream::StreamExt;
 
@@ -19,7 +20,6 @@ struct SharedState {
 
 impl Future for TimerFuture {
     type Output = ();
-    
     fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
         let mut shared_state = self.shared_state.lock().unwrap();
         if shared_state.completed {
@@ -38,7 +38,7 @@ impl TimerFuture {
             completed: false,
             waker: None,
         }));
-        
+
         let thread_shared_state = shared_state.clone();
         thread::spawn(move || {
             thread::sleep(duration);
@@ -48,7 +48,7 @@ impl TimerFuture {
                 waker.wake();
             }
         });
-        
+
         TimerFuture { shared_state }
     }
 }
@@ -105,29 +105,18 @@ fn main() {
     let spawner = Spawner { task_sender };
     let mut executor = Executor { task_receiver };
 
-    // Spawn multiple tasks as shown in the image
+    // Spawn asynchronous task
     spawner.spawn(async {
-        println!("Syarna's Komputer: howdy1!");
-        // Wait for our timer future to complete after two seconds.
+        println!("Syarna's Computer: howdy!");
         TimerFuture::new(Duration::new(2, 0)).await;
-        println!("Syarna's Komputer: done1!");
-    });
-    
-    spawner.spawn(async {
-        println!("Syarna's Komputer: howdy2!");
-        // Wait for our timer future to complete after two seconds.
-        TimerFuture::new(Duration::new(2, 0)).await;
-        println!("Syarna's Komputer: done2!");
-    });
-    
-    spawner.spawn(async {
-        println!("Syarna's Komputer: howdy3!");
-        // Wait for our timer future to complete after two seconds.
-        TimerFuture::new(Duration::new(2, 0)).await;
-        println!("Syarna's Komputer: done3!");
+        println!("Syarna's Computer: done!");
     });
 
-    // Run the executor until the task queue is empty.
-    // This will print "howdy!", pause, and then print "done!".
+    // Tambahan untuk 1.2:
+    println!("Syarna's Computer: Task has been spawned!");
+
+    drop(spawner); // Channel ditutup
+
     futures::executor::block_on(executor.run());
 }
+
