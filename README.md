@@ -1,6 +1,6 @@
 # Tutorial 10 - Syarna Savitri (2206083565)
 
-## 🧪 Penjelasan Singkat Experiment 1.3
+## 🧪 Penjelasan Experiment 1.3
 
 Pada eksperimen ini, saya menguji efek dari **multiple spawn** task asynchronous dan pengaruh dari penggunaan `drop(spawner)` terhadap jalannya executor dan proses task.
 
@@ -15,8 +15,6 @@ Kode yang digunakan merupakan executor sederhana yang menjalankan future yang ki
 - **`drop(spawner)`**: Menutup channel pengirim task. Ini penting agar executor tahu bahwa tidak ada lagi task yang akan dikirim dan bisa berhenti.
 
 ---
-
-## 🧪 Eksperimen: Menghapus dan Mengembalikan `drop(spawner)`
 
 ### ✅ Percobaan 1: Dengan `drop(spawner)`
 
@@ -64,7 +62,7 @@ Kode yang digunakan merupakan executor sederhana yang menjalankan future yang ki
 
 ---
 
-## 🧾 Kesimpulan Eksperimen 1.3
+## ✅ Kesimpulan Eksperimen 1.3
 
 - Fungsi seperti `tokio::spawn` atau `thread::spawn` menjalankan future secara asynchronous.
 - Spawner dan executor saling bekerja untuk mengatur task lifecycle.
@@ -72,7 +70,7 @@ Kode yang digunakan merupakan executor sederhana yang menjalankan future yang ki
 
 ---
 
-## 📡 Penjelasan Eksperimen 2.1: Broadcast Chat Server
+## 📡 Penjelasan Eksperimen 2.1
 
 Ini adalah aplikasi **chat siaran (broadcast chat)** berbasis WebSocket dan pemrograman asinkron di Rust. Komponen:
 - 1 server WebSocket
@@ -103,7 +101,7 @@ Teknologi:
 
 ---
 
-## 🔧 Eksperimen 2.2: Mengubah Port WebSocket
+## 🔧 Penjelasan Eksperimen 2.2
 
 Perubahan:
 - Port dari `2000` diubah ke `8080`
@@ -136,5 +134,39 @@ let url = url::Url::parse("ws://127.0.0.1:8080")?;
 
 - Modifikasi port berhasil.
 - WebSocket tetap berfungsi dengan baik setelah perubahan port di sisi server dan client.
+
+---
+
+## 🧪 Experiment 2.3: Menambahkan Informasi IP dan Port pada Pesan Broadcast
+
+### Deskripsi
+
+Untuk memberikan konteks pengirim pesan dalam chat, server menambahkan informasi IP dan port pengirim di depan pesan yang dibroadcast ke client.
+
+### Perubahan Kode Utama
+
+- Saat menerima pesan dari client, server mengambil IP dan port socket pengirim.
+- Pesan broadcast diubah menjadi format:
+
+```
+<IP:Port>: <pesan asli>
+```
+
+- Server juga mencetak log koneksi client baru dengan IP dan port.
+
+### Screenshot output dari sisi Server
+
+<img width="786" alt="Screenshot 2025-05-23 at 18 00 00" src="https://github.com/user-attachments/assets/1b6c4d57-7ffb-4813-91b2-68a9f4271997" />
+
+
+### Screenshot output dari sisi Client
+
+<img width="803" alt="Screenshot 2025-05-23 at 18 00 27" src="https://github.com/user-attachments/assets/69d3c7bc-0d33-4b4a-a51d-9ef11e82450b" />
+
+## ✅ Kesimpulan Eksperimen 2.3
+
+- Penggunaan `drop(spawner)` sangat penting agar executor asynchronous dapat berhenti dengan benar.
+- WebSocket broadcast server berjalan baik dan bisa dikembangkan untuk fitur chat lebih lanjut.
+- Menambahkan identitas IP dan port pada pesan broadcast membantu client mengenali pengirim pesan dan membuat pengalaman chat menjadi lebih informatif.
 
 ---
