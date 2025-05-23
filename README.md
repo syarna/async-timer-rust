@@ -1,5 +1,4 @@
-# Tutorial 10
-## Syarna Savitri (2206083565)
+# Tutorial 10 - Syarna Savitri (2206083565)
 
 ## Penjelasan Singkat Tutorial 1.3
 
@@ -72,6 +71,44 @@ Output konsol:
 - **Spawner** dan **executor** saling bergantung untuk mengatur lifecycle task asynchronous.
 - **Drop** pada spawner (channel sender) adalah sinyal penting untuk menandakan tidak ada lagi task baru sehingga executor bisa berhenti dengan benar.
 - Memahami lifecycle ini sangat penting dalam membuat executor dan runtime asynchronous custom.
+
+## Eksperimen 2.1: Kode Asli dan Cara Menjalankannya
+
+Ini adalah aplikasi chat siaran (broadcast chat) yang dibangun menggunakan pemrograman asinkron di Rust dengan dukungan WebSocket. Aplikasi terdiri dari satu server dan beberapa klien yang dapat saling mengirim dan menerima pesan secara real-time.
+
+## 🔧 Cara Menjalankan
+
+1. Ketik pesan di salah satu terminal klien.
+
+Saat salah satu klien mengetik pesan, pesan tersebut dikirim ke server. Server kemudian menerima pesan itu dan **mendistribusikannya (broadcast)** ke semua klien yang sedang terhubung, termasuk pengirimnya sendiri.
+
+Ini menunjukkan implementasi **pemrograman asinkron** yang nyata, di mana banyak koneksi WebSocket dapat ditangani secara bersamaan dengan:
+- `tokio::spawn` untuk mengelola koneksi secara paralel.
+- `tokio_websockets` sebagai pustaka WebSocket.
+- `tokio::sync::broadcast` untuk menyiarkan pesan ke banyak penerima.
+
+Berikut tangkapan layar saat menjalankan 1 server dan 3 klien:
+- Tampilan dari sisi Server
+
+<img width="812" alt="Screenshot 2025-05-23 at 17 07 40" src="https://github.com/user-attachments/assets/cb3209eb-c187-436e-9598-bec2d7f062b7" />
+
+- Tampilan dari sisi Client 1
+
+<img width="800" alt="Screenshot 2025-05-23 at 17 08 14" src="https://github.com/user-attachments/assets/e52294f4-78ba-4a80-a171-abd045a5816c" />
+
+- Tampilan dari sisi Client 2
+
+<img width="802" alt="Screenshot 2025-05-23 at 17 08 43" src="https://github.com/user-attachments/assets/ba11598b-4706-48e5-bb1b-3880f69cd593" />
+
+- Tampilan dari sisi Client 3
+
+<img width="802" alt="Screenshot 2025-05-23 at 17 09 28" src="https://github.com/user-attachments/assets/e19ad952-fbad-4c5b-a390-16b77e9b82a6" />
+
+
+
+
+
+
 
 
 
