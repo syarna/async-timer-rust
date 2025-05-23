@@ -22,8 +22,12 @@ Kode yang digunakan merupakan sebuah executor sederhana yang menjalankan future 
 
 ### Percobaan 1: Dengan `drop(spawner)`
 
-1. Screenshot output saat `drop(spawner)` ada (program berhenti normal).  
+1. Screenshot output saat `drop(spawner)` ada (program berhenti normal).
+<img width="568" alt="Screenshot 2025-05-23 at 16 25 23" src="https://github.com/user-attachments/assets/5c7fbd20-0580-400b-afe4-fcfbd8a63413" />
+
+
 Output konsol:
+<img width="762" alt="Screenshot 2025-05-23 at 16 24 28" src="https://github.com/user-attachments/assets/09b86233-b0d8-4609-859c-c9dff44e801b" />
 
 
 **Penjelasan:**
@@ -31,13 +35,15 @@ Output konsol:
 - `drop(spawner)` menutup channel task sender sehingga ketika semua task sudah selesai, executor menyadari tidak ada task baru yang akan datang dan bisa selesai.
 - Program berjalan dengan baik, menampilkan semua pesan sesuai urutan, lalu berhenti dengan benar.
 
----
 
 ### Percobaan 2: Tanpa `drop(spawner)`
 
-2. Screenshot output saat `drop(spawner)` dihapus (program menggantung). 
-Output konsol:
+2. Screenshot output saat `drop(spawner)` dihapus (program menggantung).
+<img width="566" alt="Screenshot 2025-05-23 at 16 29 17" src="https://github.com/user-attachments/assets/3174c900-7e2a-4073-ad3f-58d411a87245" />
 
+
+Output konsol:
+<img width="766" alt="Screenshot 2025-05-23 at 16 29 46" src="https://github.com/user-attachments/assets/0440f1aa-1f49-44b1-8fec-c117784c80cf" />
 
 
 **Penjelasan:**
