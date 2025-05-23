@@ -5,9 +5,8 @@ use tokio_websockets::{ClientBuilder, Message};
 
 #[tokio::main]
 async fn main() -> Result<(), tokio_websockets::Error> {
-    // Ganti port 2000 menjadi 8080 di sini
     let (mut ws_stream, _) =
-        ClientBuilder::from_uri(Uri::from_static("ws://127.0.0.1:8080"))
+        ClientBuilder::from_uri(Uri::from_static("ws://127.0.0.1:2000"))
             .connect()
             .await?;
 
@@ -18,7 +17,7 @@ async fn main() -> Result<(), tokio_websockets::Error> {
     let mut recv_task = tokio::spawn(async move {
         while let Some(Ok(message)) = receiver.next().await {
             if let Some(msg) = message.as_text() {
-                println!("Received: {}", msg);
+                println!("{}", msg);
             }
         }
     });
