@@ -41,8 +41,10 @@ async fn handle_connection(
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync>> {
     let (bcast_tx, _) = channel(16);
-    let listener = TcpListener::bind("127.0.0.1:2000").await?;
-    println!("Server listening on ws://127.0.0.1:2000");
+
+    // Ganti port 2000 menjadi 8080 di sini
+    let listener = TcpListener::bind("127.0.0.1:8080").await?;
+    println!("Server listening on ws://127.0.0.1:8080");
 
     loop {
         let (socket, addr) = listener.accept().await?;
