@@ -1,114 +1,140 @@
 # Tutorial 10 - Syarna Savitri (2206083565)
 
-## Penjelasan Singkat Tutorial 1.3
+## 🧪 Penjelasan Singkat Experiment 1.3
 
 Pada eksperimen ini, saya menguji efek dari **multiple spawn** task asynchronous dan pengaruh dari penggunaan `drop(spawner)` terhadap jalannya executor dan proses task.
 
-Kode yang digunakan merupakan sebuah executor sederhana yang menjalankan future yang kita spawn melalui `Spawner`. Task-task ini menggunakan mekanisme waker untuk memberi tahu executor bahwa future-nya siap untuk dipoll ulang.
-
-
-## Apa itu Spawner, Executor, dan Drop?
-
-- **Spawner** adalah komponen yang bertugas untuk menerima future dari program dan mengubahnya menjadi task yang bisa dijalankan. Spawner kemudian mengirimkan task tersebut ke channel agar executor bisa mengambil dan menjalankannya.
-
-- **Executor** adalah loop utama yang menerima task dari channel dan menjalankan task tersebut. Executor memanggil `poll()` pada future untuk menjalankan task sampai selesai. Jika future belum selesai, executor akan menunggu waker membangunkannya kembali.
-
-- **Drop(spawner)** menutup channel pengirim task. Ini sangat penting karena tanpa menutup channel, executor akan terus menunggu task baru dan tidak akan pernah berhenti. Dengan `drop(spawner)`, channel tertutup dan executor bisa selesai ketika semua task sudah selesai diproses.
+Kode yang digunakan merupakan executor sederhana yang menjalankan future yang kita spawn melalui `Spawner`. Task-task ini menggunakan mekanisme waker untuk memberi tahu executor bahwa future-nya siap untuk dipoll ulang.
 
 ---
 
-## Eksperimen: Menghapus dan Mengembalikan `drop(spawner)`
+## 🧠 Apa itu Spawner, Executor, dan Drop?
 
+- **Spawner**: Menerima future dari program dan mengubahnya menjadi task yang bisa dijalankan. Task dikirim melalui channel ke executor.
+- **Executor**: Loop utama yang memanggil `poll()` pada future dan mengeksekusi task sampai selesai. Jika future belum selesai, executor menunggu waker.
+- **`drop(spawner)`**: Menutup channel pengirim task. Ini penting agar executor tahu bahwa tidak ada lagi task yang akan dikirim dan bisa berhenti.
 
-### Percobaan 1: Dengan `drop(spawner)`
+---
 
-1. Screenshot output saat `drop(spawner)` ada (program berhenti normal).
-<img width="568" alt="Screenshot 2025-05-23 at 16 25 23" src="https://github.com/user-attachments/assets/5c7fbd20-0580-400b-afe4-fcfbd8a63413" />
+## 🧪 Eksperimen: Menghapus dan Mengembalikan `drop(spawner)`
 
+### ✅ Percobaan 1: Dengan `drop(spawner)`
 
-Output konsol:
+> Program berhenti normal
 
-<img width="762" alt="Screenshot 2025-05-23 at 16 24 28" src="https://github.com/user-attachments/assets/09b86233-b0d8-4609-859c-c9dff44e801b" />
+📸 Screenshot:
 
+![drop present](https://github.com/user-attachments/assets/5c7fbd20-0580-400b-afe4-fcfbd8a63413)
 
-**Penjelasan:**
+📋 Output:
 
-- `drop(spawner)` menutup channel task sender sehingga ketika semua task sudah selesai, executor menyadari tidak ada task baru yang akan datang dan bisa selesai.
-- Program berjalan dengan baik, menampilkan semua pesan sesuai urutan, lalu berhenti dengan benar.
-
-
-### Percobaan 2: Tanpa `drop(spawner)`
-
-2. Screenshot output saat `drop(spawner)` dihapus (program menggantung).
-<img width="566" alt="Screenshot 2025-05-23 at 16 29 17" src="https://github.com/user-attachments/assets/3174c900-7e2a-4073-ad3f-58d411a87245" />
-
-
-Output konsol:
-
-<img width="766" alt="Screenshot 2025-05-23 at 16 29 46" src="https://github.com/user-attachments/assets/0440f1aa-1f49-44b1-8fec-c117784c80cf" />
-
+![output normal](https://github.com/user-attachments/assets/09b86233-b0d8-4609-859c-c9dff44e801b)
 
 **Penjelasan:**
+- `drop(spawner)` menutup channel sehingga executor tahu tidak ada task baru yang dikirim.
+- Program berjalan normal dan selesai dengan benar.
 
-- Karena spawner tidak di-`drop`, channel pengirim task tetap terbuka.
-- Executor terus menunggu task baru yang bisa dikirim ke channel tersebut, sehingga `executor.run()` tidak pernah selesai.
-- Akibatnya, program tidak pernah berhenti walaupun semua task sudah selesai.
-- Ini menunjukkan bahwa menutup channel sangat penting agar executor tahu kapan harus selesai.
+---
 
+### ❌ Percobaan 2: Tanpa `drop(spawner)`
 
-## Korelasi Antara Spawner, Executor, dan Drop
+> Program menggantung
 
-- **Spawner** membuat dan mengirim task ke executor melalui channel.
-- **Executor** menjalankan task sampai selesai.
-- **Drop(spawner)** menutup channel yang menandakan tidak ada lagi task yang akan datang.
-- Jika channel tetap terbuka, executor akan terus menunggu dan tidak selesai, menyebabkan program menggantung.
-- Jika channel ditutup (dengan `drop(spawner)`), executor bisa mengenali akhir tugas dan berhenti.
+📸 Screenshot:
 
+![no drop](https://github.com/user-attachments/assets/3174c900-7e2a-4073-ad3f-58d411a87245)
 
-## Kesimpulan
+📋 Output:
 
-- Fungsi **`tokio::spawn`** atau `thread::spawn` akan menjalankan future atau thread secara paralel secara asynchronous.
-- **Spawner** dan **executor** saling bergantung untuk mengatur lifecycle task asynchronous.
-- **Drop** pada spawner (channel sender) adalah sinyal penting untuk menandakan tidak ada lagi task baru sehingga executor bisa berhenti dengan benar.
-- Memahami lifecycle ini sangat penting dalam membuat executor dan runtime asynchronous custom.
+![output hang](https://github.com/user-attachments/assets/0440f1aa-1f49-44b1-8fec-c117784c80cf)
 
-## Eksperimen 2.1: Kode Asli dan Cara Menjalankannya
+**Penjelasan:**
+- Channel tetap terbuka karena `drop(spawner)` dihapus.
+- Executor menunggu task baru selamanya meski semua task sudah selesai.
+- Program tidak pernah berhenti.
 
-Ini adalah aplikasi chat siaran (broadcast chat) yang dibangun menggunakan pemrograman asinkron di Rust dengan dukungan WebSocket. Aplikasi terdiri dari satu server dan beberapa klien yang dapat saling mengirim dan menerima pesan secara real-time.
+---
 
-## 🔧 Cara Menjalankan
+## 🔗 Korelasi antara Spawner, Executor, dan Drop
 
-1. Ketik pesan di salah satu terminal klien.
+- Spawner membuat dan mengirim task.
+- Executor menjalankan task hingga selesai.
+- `drop(spawner)` adalah sinyal bahwa tidak ada task baru → executor bisa berhenti.
+- Jika tidak di-drop, executor akan menggantung karena menunggu terus.
 
-Saat salah satu klien mengetik pesan, pesan tersebut dikirim ke server. Server kemudian menerima pesan itu dan **mendistribusikannya (broadcast)** ke semua klien yang sedang terhubung, termasuk pengirimnya sendiri.
+---
 
-Ini menunjukkan implementasi **pemrograman asinkron** yang nyata, di mana banyak koneksi WebSocket dapat ditangani secara bersamaan dengan:
-- `tokio::spawn` untuk mengelola koneksi secara paralel.
-- `tokio_websockets` sebagai pustaka WebSocket.
-- `tokio::sync::broadcast` untuk menyiarkan pesan ke banyak penerima.
+## 🧾 Kesimpulan Eksperimen 1.3
 
-Berikut tangkapan layar saat menjalankan 1 server dan 3 klien:
-- Tampilan dari sisi Server
+- Fungsi seperti `tokio::spawn` atau `thread::spawn` menjalankan future secara asynchronous.
+- Spawner dan executor saling bekerja untuk mengatur task lifecycle.
+- `drop(spawner)` sangat penting agar executor tahu kapan harus berhenti.
 
-<img width="812" alt="Screenshot 2025-05-23 at 17 07 40" src="https://github.com/user-attachments/assets/cb3209eb-c187-436e-9598-bec2d7f062b7" />
+---
 
-- Tampilan dari sisi Client 1
+## 📡 Penjelasan Eksperimen 2.1: Broadcast Chat Server
 
-<img width="800" alt="Screenshot 2025-05-23 at 17 08 14" src="https://github.com/user-attachments/assets/e52294f4-78ba-4a80-a171-abd045a5816c" />
+Ini adalah aplikasi **chat siaran (broadcast chat)** berbasis WebSocket dan pemrograman asinkron di Rust. Komponen:
+- 1 server WebSocket
+- Beberapa client
 
-- Tampilan dari sisi Client 2
+### Cara kerja:
+1. Klien mengetik pesan → dikirim ke server.
+2. Server menerima dan **menyiarkan** pesan ke semua klien yang terhubung (termasuk pengirim).
 
-<img width="802" alt="Screenshot 2025-05-23 at 17 08 43" src="https://github.com/user-attachments/assets/ba11598b-4706-48e5-bb1b-3880f69cd593" />
+Teknologi:
+- `tokio::spawn`: Menangani banyak koneksi paralel.
+- `tokio_websockets`: Library untuk WebSocket.
+- `tokio::sync::broadcast`: Menyiarkan pesan ke semua client.
 
-- Tampilan dari sisi Client 3
+📸 Screenshot:
 
-<img width="802" alt="Screenshot 2025-05-23 at 17 09 28" src="https://github.com/user-attachments/assets/e19ad952-fbad-4c5b-a390-16b77e9b82a6" />
+- **Server**
+  ![server](https://github.com/user-attachments/assets/cb3209eb-c187-436e-9598-bec2d7f062b7)
+  
+- **Client 1**
+  ![client1](https://github.com/user-attachments/assets/e52294f4-78ba-4a80-a171-abd045a5816c)
+  
+- **Client 2**
+  ![client2](https://github.com/user-attachments/assets/ba11598b-4706-48e5-bb1b-3880f69cd593)
+  
+- **Client 3**
+  ![client3](https://github.com/user-attachments/assets/e19ad952-fbad-4c5b-a390-16b77e9b82a6)
 
+---
 
+## 🔧 Eksperimen 2.2: Mengubah Port WebSocket
 
+Perubahan:
+- Port dari `2000` diubah ke `8080`
 
+### Kode yang diubah:
 
+- **Server**: binding diubah menjadi `127.0.0.1:8080`
 
+```rust
+let listener = TcpListener::bind("127.0.0.1:8080").await?;
+```
 
+📸 Screenshot:
 
+![server port](https://github.com/user-attachments/assets/1a94905c-3594-406b-8c9c-4d3f99595bb6)
 
+- **Client**: URI koneksi diubah ke `ws://127.0.0.1:8080`
+
+```rust
+let url = url::Url::parse("ws://127.0.0.1:8080")?;
+```
+
+📸 Screenshot:
+
+![client port](https://github.com/user-attachments/assets/a18f918f-60e4-4c84-995b-69050a82dba8)
+
+---
+
+## ✅ Kesimpulan Eksperimen 2.2
+
+- Modifikasi port berhasil.
+- WebSocket tetap berfungsi dengan baik setelah perubahan port di sisi server dan client.
+
+---
